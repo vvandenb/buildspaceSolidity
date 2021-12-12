@@ -3,9 +3,8 @@ const main = async () => {
 	const waveContract = await waveContractFactory.deploy({
 	  value: hre.ethers.utils.parseEther('0.001'),
 	});
-  
+
 	await waveContract.deployed();
-  
 	console.log('WavePortal address: ', waveContract.address);
 };
 
