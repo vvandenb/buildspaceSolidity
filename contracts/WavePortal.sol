@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import "hardhat/console.sol";
 
-contract WavePortal {
-	uint256 totalWaves;
+contract Waves {
 	uint256 private seed;
 	mapping(address => uint256) public lastWavedAt;
 	event NewWave(address indexed from, uint256 timestamp, string message);
@@ -14,32 +12,26 @@ contract WavePortal {
     }
     Wave[] waves;
 
-    constructor() {
+    constructor() payable {
 		seed = (block.timestamp + block.difficulty) % 100;
     }
 
-	// Used to fill contract with Ether
-	function fillContract() external payable {
-	}
+    receive() external payable {}
 
 	// Send a wave
-	function wave(string memory _message) public payable {
+	function wave(string calldata _message) public payable {
 		require(lastWavedAt[msg.sender] + 1 minutes < block.timestamp, "Please wait a minute between two messages.");
 		bytes memory _messageBytes = bytes(_message);
-		require(_messageBytes.length == 0);
+		require(_messageBytes.length != 0, "Please send a message");
 
 		lastWavedAt[msg.sender] = block.timestamp;
-        totalWaves += 1;
 		waves.push(Wave(msg.sender, _message, block.timestamp));
 
         // Give a 50% chance that the user wins the prize.
         seed = (block.difficulty + block.timestamp + seed) % 100;
         if (seed < 50) {
             uint256 prizeAmount = 0.0001 ether;
-            require(
-                prizeAmount <= address(this).balance,
-                "Trying to withdraw more money than the contract has."
-            );
+            require(prizeAmount <= address(this).balance, "Trying to withdraw more money than the contract has.");
             (bool success, ) = (msg.sender).call{value: prizeAmount}("");
             require(success, "Failed to withdraw money from contract.");
         }
@@ -47,13 +39,14 @@ contract WavePortal {
 		emit NewWave(msg.sender, block.timestamp, _message);
     }
 
-	// Returns all waves
-	function getAllWaves() public view returns (Wave[] memory) {
-        return waves;
+    //Getters
+    function getWaves() view public returns(Wave[] memory)
+    {
+        return (waves);
     }
 
-	// Returns waves count
-    function getTotalWaves() public view returns (uint256) {
-        return totalWaves;
+    function getWavesCount() view public returns(uint256)
+    {
+        return (waves.length);
     }
 }
