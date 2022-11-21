@@ -23,7 +23,7 @@ task("accounts", "Prints the list of accounts", async (args, hre): Promise<void>
 
 task("balances", "Prints the list of AVAX account balances", async (args, hre): Promise<void> => {
   const accounts: SignerWithAddress[] = await hre.ethers.getSigners()
-  for(const account of accounts){
+  for (const account of accounts) {
     const balance: BigNumber = await hre.ethers.provider.getBalance(
       account.address
     );
@@ -62,7 +62,7 @@ export default {
         "0x750839e9dbbd2a0910efe40f50b2f3b2f2f59f5580bb4b83bd8c1201cf9a010a"
       ]
     },
-    rinkeby: {
+    goerli: {
       url: process.env.STAGING_ALCHEMY_KEY,
       accounts: [process.env.PRIVATE_KEY],
     },
@@ -84,7 +84,8 @@ export default {
   etherscan: {
     apiKey: {
       avalancheFujiTestnet: process.env.API_KEY,
-      avalanche: process.env.API_KEY
+      avalanche: process.env.API_KEY,
+      goerli: process.env.API_KEY
     }
   }
 }
